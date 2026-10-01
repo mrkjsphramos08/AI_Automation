@@ -1,0 +1,19 @@
+# Environment secrets
+.env
+.env.local
+.env.*.local
+
+# n8n runtime data (SQLite database, execution logs, credentials)
+.n8n-data/
+
+# Vector database storage (if enabled)
+qdrant-data/
+
+# Shared data / test media (keep local test files out of git)
+shared-data/*
+!shared-data/.gitkeep
+
+# System and logs
+.DS_Store
+Thumbs.db
+*.log
