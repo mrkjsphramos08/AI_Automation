@@ -8,7 +8,7 @@ services:
       - GENERIC_TIMEZONE=Asia/Manila
       - TZ=Asia/Manila
       - N8N_ENCRYPTION_KEY=${N8N_ENCRYPTION_KEY}
-      - WEBHOOK_URL=${WEBHOOK_URL:-http://localhost:5678/}
+      - N8N_WEBHOOK_URL=${N8N_WEBHOOK_URL:-${WEBHOOK_URL:-http://localhost:5678/}}
       # Execution pruning
       - EXECUTIONS_DATA_PRUNE=true
       - EXECUTIONS_DATA_MAX_AGE=168
