@@ -10,11 +10,19 @@ A containerized automation environment built on [n8n](https://n8n.io/) designed 
 ai-automation/
 ├── .env.example              # Environment variables template
 ├── .gitignore                # Protects secrets, databases, and runtime files
-├── docker-compose.yml        # Docker service definitions & configurations
+├── docker-compose.yml        # Docker service definitions (n8n, postgres, ai-service)
+├── docs/
+│   └── learning-log.md       # Architectural notes & concepts learned
+├── services/
+│   └── ai-service/           # Python FastAPI AI microservice
+│       ├── Dockerfile
+│       ├── requirements.txt
+│       └── main.py
 ├── workflows/                # Exported workflow JSON files (version-controlled)
 ├── scripts/
 │   ├── export-workflows.sh   # Exports workflows from n8n to ./workflows/
-│   └── import-workflows.sh   # Imports workflows from ./workflows/ into n8n
+│   ├── import-workflows.sh   # Imports workflows from ./workflows/ into n8n
+│   └── backup-db.sh          # Compressed PostgreSQL database dump (pg_dump)
 ├── shared-data/              # Local storage for documents, CSVs, or media
 └── README.md                 # Project documentation & setup instructions
 ```
@@ -45,6 +53,12 @@ http://localhost:5678
 ```
 Follow the on-screen instructions to create your initial owner account.
 
+### 5. Access Python AI Microservice (FastAPI)
+The Python service runs alongside n8n with auto-reloading:
+- **Interactive Swagger UI**: `http://localhost:8000/docs`
+- **Health Check**: `http://localhost:8000/health`
+- **Internal URL (used inside n8n)**: `http://ai-service:8000`
+
 ---
 
 ## 🔄 Workflow Version Control (Git)
@@ -65,6 +79,24 @@ This exports your workflows as JSON files into the `workflows/` directory.
 ```
 
 > **Security Note:** n8n's export command strips saved credentials and API keys from exported workflow files automatically. However, always ensure you never hardcode sensitive keys directly into raw strings or custom Code/HTTP Request nodes.
+
+---
+
+## 🗄️ Database Backups & Restore (PostgreSQL)
+
+n8n runs on a containerized PostgreSQL database (`postgres:16-alpine`) backed by a Docker named volume (`postgres-data`).
+
+### Creating a Database Backup
+To create a compressed snapshot of the entire database (including users, credentials, workflows, and execution logs):
+```bash
+./scripts/backup-db.sh
+```
+This saves a timestamped, gzip-compressed SQL dump in `backups/` (e.g., `backups/n8n_postgres_YYYYMMDD_HHMMSS.sql.gz`).
+
+### Restoring a Database Backup
+```bash
+gunzip -c backups/n8n_postgres_<TIMESTAMP>.sql.gz | docker compose exec -T postgres psql -U n8n -d n8n
+```
 
 ---
 

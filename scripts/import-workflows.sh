@@ -7,6 +7,6 @@ PROJECT_ROOT="$(dirname "$SCRIPT_DIR")"
 cd "$PROJECT_ROOT"
 
 echo "➡️ Importing workflows from ./workflows/ into n8n..."
-docker compose exec -T n8n n8n import:workflow --input=/workflows/
+docker compose exec -T n8n n8n import:workflow --separate --input=/workflows/
 
 echo "✅ Workflows successfully imported into n8n."
